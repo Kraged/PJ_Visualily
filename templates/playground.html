@@ -1,0 +1,124 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <h3>Image Upload & Analysis</h3>
+
+  <form
+    action="{{ url_for('playground.analyze') }}"
+    method="post"
+    enctype="multipart/form-data"
+    class="mb-4"
+    id="uploadForm"
+  >
+    <div class="input-group">
+      <input
+        type="file"
+        name="file"
+        class="form-control"
+        id="imageInput"
+        accept="image/*"
+      />
+      <button class="btn btn-primary" type="submit" id="analyzeBtn">
+        Analyze Image
+      </button>
+    </div>
+  </form>
+
+  <hr />
+
+  <div class="row">
+    <div class="col-md-10 border-end">
+      <h5>Image Preview</h5>
+      <div class="text-center p-3 bg-light rounded">
+        <img
+          id="preview"
+          src="{{ uploaded_image or '#' }}"
+          alt="Image Preview"
+          style="max-width: 100%; height: auto; display: {{ 'block' if uploaded_image else 'none' }};"
+        />
+      </div>
+    </div>
+
+    <div class="col-md-2" id="metadata-column">
+      <h5 class="border-bottom pb-2">Information</h5>
+      <h5 id="ctr"></h5>
+      <div style="max-height: 80vh; overflow-y: auto">
+        <!-- {% if info %} -->
+        <div class="list-group list-group-flush">
+          <!-- {% for key, value in info.items() %} -->
+          <img id="preview" src="#" style="display: none; max-width: 100%" />
+          <!-- <small class="text-uppercase fw-bold text-primary">{{ key }}</small><br /> -->
+          <!-- <span class="text-break">{{ value }}</span> -->
+        </div>
+        <!-- {% endfor %} -->
+      </div>
+        <!-- {% else %}
+        <p class="text-muted">Waiting for upload...</p>
+        {% endif %} -->
+      </div>
+      <table id="img_exif" class="table table-striped table-hover border" style="width:100%">
+        <thead>
+          <tr>
+            <th>Exif Tag</th>
+            <th>Metadata Value</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const imageInput = document.getElementById("imageInput");
+  const uploadForm = document.getElementById("uploadForm");
+$(document).ready(function() {
+    const uploadForm = $("#uploadForm");
+
+    uploadForm.on("submit", function (e) {
+        e.preventDefault(); // This is the line that stops the page jump!
+        e.stopPropagation();
+
+        const fileInput = document.getElementById("imageInput");
+        if (fileInput.files.length === 0) {
+            alert("Please select a file first");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        $("#ctr").text("Analyzing...");
+
+        $.ajax({
+            url: "/api/analyze",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                // Now this code will actually run without the page reloading!
+                $("#ctr").text("Success!");
+                if (response.imagedp) {
+                    $("#preview").attr("src", response.imagedp).show();
+                    
+                    const tableData = Object.entries(response.message);
+                    
+                    if ($.fn.DataTable.isDataTable("#img_exif")) {
+                        $("#img_exif").DataTable().clear().rows.add(tableData).draw();
+                    } else {
+                        $("#img_exif").DataTable({
+                            data: tableData,
+                            columns: [{ title: "Tag" }, { title: "Value" }]
+                        });
+                    }
+                }
+            },
+            error: function (err) {
+                console.log(err);
+                $("#ctr").text("Upload failed.");
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

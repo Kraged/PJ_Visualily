@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home - 2026 Project</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='bootstrap_538/css/bootstrap.min.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='datatable/datatables.min.css') }}"
+    />
+
+    <style>
+      /* Main container for 80% width and centering */
+      .content-wrapper {
+        width: 80%;
+        margin: 3rem auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content-wrapper">
+      <h1 class="text-center mb-4">My Website Text</h1>
+
+      <div class="table-responsive">
+        <table
+          id="myDataTable"
+          class="table table-striped table-hover border"
+          style="width: 100%"
+        >
+          <thead class="table-dark">
+            <tr>
+              <th>Column 1</th>
+              <th>Column 2</th>
+              <th>Column 3</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Data Alpha</td>
+              <td>Data Beta</td>
+              <td>Data Gamma</td>
+            </tr>
+            <tr>
+              <td>Python Flask</td>
+              <td>2026 Project</td>
+              <td>Deployment Ready</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='others/jquery-4.0.0.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='bootstrap_538/js/bootstrap.bundle.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='datatable/datatables.min.js') }}"></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#myDataTable").DataTable({
+          order: [[0, "asc"]],
+          pageLength: 10,
+        });
+      });
+    </script>
+  </body>
+</html>
